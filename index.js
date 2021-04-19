@@ -17,16 +17,19 @@ const port = process.env.PORT || 5054;
 
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
-  const serviceCollection = client.db("locksmithUser").collection("services");
-  const reviewCollection = client.db("locksmithUser").collection("reviews");
+  const serviceCollection = client.db("locksmith").collection("services");
+  const userServiceCollection = client.db("locksmith").collection("userServices");
+  const adminCollection = client.db("locksmith").collection("admins");
+  const reviewCollection = client.db("locksmith").collection("reviews");
   console.log("Database connected successfully");
 
-  // inserting service to database
-  app.post('/addService', (req, res) => {
-    const service = req.body;
-    serviceCollection.insertOne(service)
+  // inserting review to database
+  app.post('/addServicesOfUser', (req, res) => {
+    const newService = req.body;
+    userServiceCollection.insertOne(newService)
     .then(result => {
-      res.send(result.insertedCount > 0)
+      console.log(result)
+      res.send(result)
     });
   })
 
@@ -37,11 +40,28 @@ client.connect(err => {
     .then(result => {
       res.send(result.insertedCount > 0)
     });
-  })
+  });
+
+  // inserting admin to database
+  app.post('/addAdmin', (req, res) => {
+    const newAdmin = req.body;
+    adminCollection.insertOne(newAdmin)
+    .then(result => {
+      res.send(result.insertedCount > 0)
+    });
+  });
+
+  // getting services from database
+  app.get('/servicesOfUser', (req, res) => {
+    userServiceCollection.find({email : req.params.email})
+    .toArray((err, docs) => {
+      res.send(docs);
+    })
+  });
 
   // getting services from database
   app.get('/services', (req, res) => {
-    serviceCollection.find({})
+    serviceCollection.find({email : req.params.email})
     .toArray((err, docs) => {
       res.send(docs);
     })
@@ -49,9 +69,19 @@ client.connect(err => {
 
   // getting reviews from database
   app.get('/reviews', (req, res) => {
-    reviewCollection.find({email: req.query.email})
+    reviewCollection.find({})
     .toArray((err, docs) => {
       console.log("reviews", docs);
+      res.send(docs);
+    })
+  });
+
+  // getting reviews from database
+  app.get('/admins', (req, res) => {
+    adminCollection.find({})
+    .toArray((err, docs) => {
+      console.log("admins", docs);
+      console.log(req.body);
       res.send(docs);
     })
   });
