@@ -21,6 +21,7 @@ client.connect(err => {
   const userServiceCollection = client.db("locksmith").collection("userServices");
   const adminCollection = client.db("locksmith").collection("admins");
   const reviewCollection = client.db("locksmith").collection("reviews");
+  
   console.log("Database connected successfully");
 
   // inserting review to database
