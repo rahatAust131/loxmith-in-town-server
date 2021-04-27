@@ -18,19 +18,18 @@ const port = process.env.PORT || 5054;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
   const serviceCollection = client.db("locksmith").collection("services");
-  const userServiceCollection = client.db("locksmith").collection("userServices");
   const adminCollection = client.db("locksmith").collection("admins");
   const reviewCollection = client.db("locksmith").collection("reviews");
   
   console.log("Database connected successfully");
 
-  // inserting review to database
-  app.post('/addServicesOfUser', (req, res) => {
+  // inserting service to database
+  app.post('/addService', (req, res) => {
     const newService = req.body;
-    userServiceCollection.insertOne(newService)
+    serviceCollection.insertOne(newService)
     .then(result => {
-      console.log(result)
-      res.send(result)
+      console.log(result);
+      res.send(result.insertedCount > 0);
     });
   })
 
@@ -52,13 +51,6 @@ client.connect(err => {
     });
   });
 
-  // getting services from database
-  app.get('/servicesOfUser', (req, res) => {
-    userServiceCollection.find({email : req.params.email})
-    .toArray((err, docs) => {
-      res.send(docs);
-    })
-  });
 
   // getting services from database
   app.get('/services', (req, res) => {
@@ -98,14 +90,6 @@ client.connect(err => {
   // delete a service from database
   app.delete('/deleteService/:id', (req, res) => {
     serviceCollection.deleteOne({_id: ObjectId(req.params.id)})
-    .then(result => {
-      res.send(result.deletedCount > 0)
-    });
-  });
-
-  // delete a review from database
-  app.delete('/deleteReview/:id', (req, res) => {
-    reviewCollection.deleteOne({_id: ObjectId(req.params.id)})
     .then(result => {
       res.send(result.deletedCount > 0)
     });
