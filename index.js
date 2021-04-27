@@ -54,7 +54,7 @@ client.connect(err => {
 
   // getting services from database
   app.get('/services', (req, res) => {
-    serviceCollection.find({email : req.params.email})
+    serviceCollection.find({})
     .toArray((err, docs) => {
       res.send(docs);
     })
@@ -74,7 +74,6 @@ client.connect(err => {
     adminCollection.find({})
     .toArray((err, docs) => {
       console.log("admins", docs);
-      console.log(req.body);
       res.send(docs);
     })
   });
