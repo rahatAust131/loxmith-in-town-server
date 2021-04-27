@@ -28,7 +28,6 @@ client.connect(err => {
     const newService = req.body;
     serviceCollection.insertOne(newService)
     .then(result => {
-      console.log(result);
       res.send(result.insertedCount > 0);
     });
   })
